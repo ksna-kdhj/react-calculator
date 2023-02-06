@@ -5,6 +5,7 @@ import "./styles.css"
 
 const LOCAL_STORAGE_KEY=  "calculator.calc"
 const LOCAL_STORAGE_KEY_SCI = "calculator.calc.sci"
+const LOCAL_STORAGE_KEY_HIST = "calculator.calc.hist"
 let history=[]
 export const ACTIONS = {
   ADD_DIGIT: "add-digit",
@@ -27,7 +28,7 @@ function getConstant(splConst){
   console.log(splValue)
   return splValue.toString()
 }
-const unaryOps=["Sin","Cos","Tan","!","log","sqrt","sqr","^","±"]
+const unaryOps=["Sin","Cos","Tan","!","log","sqrt","sqr","±"]
 function reducer(state, { type, payload }) {
   switch (type) {
     case ACTIONS.ADD_DIGIT:
@@ -77,6 +78,27 @@ function reducer(state, { type, payload }) {
         currentOperand: `${state.currentOperand || ""}${payload.digit}`,
       }
     case ACTIONS.CHOOSE_OPERATION:
+      if (payload.operation ==="^"){
+        if (state.currentOperand == null && state.previousOperand == null) {
+          return{
+            state
+          }
+        }
+        if(state.previousOperand == null){
+          return{
+            ...state,
+            previousOperand: state.currentOperand,
+            operation:payload.operation,
+            currentOperand:null
+          }
+        }
+        if(state.currentOperand==null && state.operation!="^")
+        return {
+          ...state,
+          operation:payload.operation,
+          currentOperand: null,
+          }
+      }
       if(unaryOps.includes(payload.operation)){
         if (state.currentOperand == null && state.previousOperand == null) {
           return{
@@ -193,6 +215,7 @@ function factorial (current){
 function evaluate({ currentOperand, previousOperand, operation }) {
   const prev = parseFloat(previousOperand)
   const current = parseFloat(currentOperand)
+  const curPower = parseFloat(currentOperand.split())
   if(!unaryOps.includes(operation)){
   if (isNaN(prev) || isNaN(current)) return ""
   }
@@ -219,9 +242,9 @@ function evaluate({ currentOperand, previousOperand, operation }) {
     case "Tan":
       computation = Math.tan(current*Math.PI/180)
       break
-    // case "^":
-    //   computation = Math.cos(current)
-    //   break
+    case "^":
+      computation = Math.pow(prev,current)
+      break
     case "sqrt":
       computation = Math.sqrt(current)
       break
@@ -264,6 +287,19 @@ function App() {
     {},(initial)=>JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY))||initial
   )
   const [sci,setSci] = useState(JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY_SCI)))
+  // const [hist,setHist] = useState(JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY_HIST)))
+  // const handleHistoryClick= ()=>{
+  //   if(hist){
+  //  const histState= hist
+  //  setHist(!hist)
+  //   }
+  //   else{
+  //     setHist(true)
+  //   }
+  // }
+  // useEffect(()=>{
+  //   localStorage.setItem(LOCAL_STORAGE_KEY_HIST,JSON.stringify(hist))
+  // },[hist])
   useEffect(()=>{
     localStorage.setItem(LOCAL_STORAGE_KEY,JSON.stringify({currentOperand,previousOperand,operation,overwrite}))
   },[currentOperand,previousOperand,operation,overwrite])
@@ -281,7 +317,7 @@ function App() {
   },[sci])
   if(sci==true){
     return(
-      <>
+      <div id="wrapper">
       <div className="historysci">
           <button>history</button></div>
       <div className="calculator-grid-sci">
@@ -333,13 +369,14 @@ function App() {
         =
       </button>
     </div>
-    </>
+    </div>
     )
   }
   return (
-    <>
+    <div id="wrapper">
     <div className="history">
-          <button>history</button></div>
+      <button>history</button>
+    </div>
     <div className="calculator-grid">
       <div className="output">
         <div className="previous-operand">
@@ -378,7 +415,7 @@ function App() {
         =
       </button>
     </div>
-    </>
+    </div>
   )
 }
 
