@@ -30,6 +30,7 @@ function getConstant(splConst){
 }
 const unaryOps=["Sin","Cos","Tan","!","log","sqrt","sqr","±"]
 function reducer(state, { type, payload }) {
+  console.log('yo')
   switch (type) {
     case ACTIONS.ADD_DIGIT:
     if(splConsts.includes(payload.digit)){
@@ -183,6 +184,7 @@ function reducer(state, { type, payload }) {
         currentOperand: state.currentOperand.slice(0, -1),
       }
     case ACTIONS.EVALUATE:
+      console.log('whats up')
       if(unaryOps.includes(state.operation)){
         return {
           ...state,
@@ -213,6 +215,7 @@ function factorial (current){
  return (current > 1) ? current * factorial(current-1) : 1
 }
 function evaluate({ currentOperand, previousOperand, operation }) {
+  console.log('hi')
   const prev = parseFloat(previousOperand)
   const current = parseFloat(currentOperand)
   const curPower = parseFloat(currentOperand.split())
@@ -263,9 +266,9 @@ function evaluate({ currentOperand, previousOperand, operation }) {
   }
   if(history.length>=10){
     history.shift()
-    console.log(history)
-    history.push(computation.toString())
-    console.log(history.length)
+    // console.log(history)
+    // history.push(computation.toString())
+    // console.log(history.length)
   }
   history.push(computation.toString())
   return computation.toString()
