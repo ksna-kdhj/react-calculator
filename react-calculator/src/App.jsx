@@ -7,12 +7,20 @@ const LOCAL_STORAGE_KEY=  "calculator.calc"
 const LOCAL_STORAGE_KEY_SCI = "calculator.calc.sci"
 const LOCAL_STORAGE_KEY_HIST = "calculator.calc.hist"
 let history=[]
+let prev_cache=""
+let cur_cache=""
+let operation_cache=""
+let histScroll=''
+let histGlobalRef=''
 export const ACTIONS = {
   ADD_DIGIT: "add-digit",
   CHOOSE_OPERATION: "choose-operation",
   CLEAR: "clear",
   DELETE_DIGIT: "delete-digit",
   EVALUATE: "evaluate",
+  TOGGLE_HISTORY_ON:'toggle-history-on',
+  TOGGLE_HISTORY_OFF:'toggle-history-off',
+  SCROLL_HISTORY:'scroll-history'
 }
 const splConsts=["e","𝝿"]
 function getConstant(splConst){
@@ -30,9 +38,23 @@ function getConstant(splConst){
 }
 const unaryOps=["Sin","Cos","Tan","!","log","sqrt","sqr","±"]
 function reducer(state, { type, payload }) {
-  console.log('yo')
+  if(type==ACTIONS.TOGGLE_HISTORY_ON){
+  prev_cache=state.previousOperand
+  cur_cache=state.currentOperand
+  operation_cache=state.operation
+  }
+  // console.log(prev_cache,cur_cache,operation_cache)
   switch (type) {
     case ACTIONS.ADD_DIGIT:
+    if(histGlobalRef===true){
+      histGlobalRef=false
+      return{
+      previousOperand:prev_cache,
+      currentOperand:cur_cache,
+      operation:operation_cache,
+      overwrite:false
+      }
+    }
     if(splConsts.includes(payload.digit)){
       if (state.overwrite) {
         return {
@@ -79,6 +101,23 @@ function reducer(state, { type, payload }) {
         currentOperand: `${state.currentOperand || ""}${payload.digit}`,
       }
     case ACTIONS.CHOOSE_OPERATION:
+      if(histGlobalRef===true){
+        histGlobalRef=false
+        if(unaryOps.includes(payload.operation)){
+          return {
+          previousOperand:evaluate({currentOperand:state.currentOperand,previousOperand:null,operation:payload.operation}),
+          currentOperand:null,
+          operation:null,
+          overwrite:false,
+          }
+        }
+        return{
+          previousOperand:state.currentOperand,
+          currentOperand:null,
+          operation:payload.operation,
+          overwrite:false,
+        }
+      }
       if (payload.operation ==="^"){
         if (state.currentOperand == null && state.previousOperand == null) {
           return{
@@ -165,8 +204,26 @@ function reducer(state, { type, payload }) {
       }
     case ACTIONS.CLEAR:
       history=[]
-      return {}
+      if(histGlobalRef===true){
+        histGlobalRef=false
+        return{
+        previousOperand:prev_cache,
+        currentOperand:cur_cache,
+        operation:operation_cache,
+        overwrite:false
+        }
+      }
+      return{}
     case ACTIONS.DELETE_DIGIT:
+      if(histGlobalRef===true){
+        histGlobalRef=false
+        return{
+        previousOperand:prev_cache,
+        currentOperand:cur_cache,
+        operation:operation_cache,
+        overwrite:false
+        }
+      }
       if (state.overwrite) {
         return {
           ...state,
@@ -184,7 +241,15 @@ function reducer(state, { type, payload }) {
         currentOperand: state.currentOperand.slice(0, -1),
       }
     case ACTIONS.EVALUATE:
-      console.log('whats up')
+      if(histGlobalRef===true){
+        histGlobalRef=false
+        return{
+          overwrite:false,
+          currentOperand:state.currentOperand,
+          previousOperand:null,
+          operation: null
+        }
+      }
       if(unaryOps.includes(state.operation)){
         return {
           ...state,
@@ -209,20 +274,46 @@ function reducer(state, { type, payload }) {
         operation: null,
         currentOperand: evaluate(state),
       }
+    case ACTIONS.TOGGLE_HISTORY_ON:
+      console.log('hi')
+      return{
+        previousOperand:history[histScroll-1],
+        currentOperand:history[histScroll],
+        operation:null,
+        overwrite:true
+      }
+    case ACTIONS.TOGGLE_HISTORY_OFF:
+      return{
+      previousOperand:prev_cache,
+       currentOperand:cur_cache,
+      operation:operation_cache,
+      overwrite:false
+      }
+    case ACTIONS.SCROLL_HISTORY:
+      return{
+        previousOperand:(histScroll===0?history[history.length-1]:history[histScroll-1]),
+        currentOperand:history[histScroll],
+        operation:null,
+        overwrite:true
+      }
   }
 }
 function factorial (current){
  return (current > 1) ? current * factorial(current-1) : 1
 }
 function evaluate({ currentOperand, previousOperand, operation }) {
-  console.log('hi')
+  let computation = ""
+  // if(histGlobalRef===true){
+  //   console.log(histGlobalRef)
+  //   computation = currentOperand
+  //   return computation
+  // }
   const prev = parseFloat(previousOperand)
   const current = parseFloat(currentOperand)
   const curPower = parseFloat(currentOperand.split())
   if(!unaryOps.includes(operation)){
   if (isNaN(prev) || isNaN(current)) return ""
   }
-  let computation = ""
   switch (operation) {
     case "+":
       computation = prev + current
@@ -264,13 +355,12 @@ function evaluate({ currentOperand, previousOperand, operation }) {
       computation = current*(-1)
       break
   }
-  if(history.length>=10){
+  if(history.length>9){
     history.shift()
-    // console.log(history)
-    // history.push(computation.toString())
     // console.log(history.length)
   }
   history.push(computation.toString())
+  // console.log(history)
   return computation.toString()
 }
 
@@ -290,16 +380,47 @@ function App() {
     {},(initial)=>JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY))||initial
   )
   const [sci,setSci] = useState(JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY_SCI)))
-  // const [hist,setHist] = useState(JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY_HIST)))
-  // const handleHistoryClick= ()=>{
-  //   if(hist){
-  //  const histState= hist
-  //  setHist(!hist)
-  //   }
-  //   else{
-  //     setHist(true)
-  //   }
-  // }
+  const [hist,setHist] = useState()
+  // JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY_HIST))
+  const handleHistoryScroll= (type)=>{
+    if (type=="prev"){
+      if(histScroll==0){
+        histScroll= history.length-1
+      }
+      else{
+        histScroll = histScroll-1
+      }
+    }
+    if(type=="next"){
+      if(histScroll==history.length-1){
+        histScroll = 0
+      }
+      else{
+        histScroll=histScroll+1
+      }
+    }
+    dispatch({type:ACTIONS.SCROLL_HISTORY})
+    }
+  const handleHistoryClick= ()=>{
+    if(hist!=null){
+   const histState= hist
+   setHist(!histState)
+   histGlobalRef=hist
+    }
+    else{
+      setHist(true)
+      histGlobalRef=true
+    }
+    if(hist===true){
+    histScroll=(history.length-1)
+    console.log('showing history now')
+    dispatch({type: ACTIONS.TOGGLE_HISTORY_ON})
+    }
+    else{
+      console.log('not showing history now')
+    dispatch({type: ACTIONS.TOGGLE_HISTORY_OFF})
+    }
+  }
   // useEffect(()=>{
   //   localStorage.setItem(LOCAL_STORAGE_KEY_HIST,JSON.stringify(hist))
   // },[hist])
@@ -322,7 +443,23 @@ function App() {
     return(
       <div id="wrapper">
       <div className="historysci">
-          <button>history</button></div>
+          <button onClick={handleHistoryClick}>{hist==false?(<>hide-hist</>):(<>show-hist</>)}</button>
+      </div>
+      <div className="historyNavigatesci">
+      {hist==false?(
+        <>
+      <br></br>
+      <button onClick={()=>handleHistoryScroll("prev")}>prev</button>
+      <br></br>
+      <br></br>
+      <br></br>
+      <button onClick={()=>handleHistoryScroll("next")}>next</button>
+      </>
+      ):(
+        <>
+        </>
+      )}
+      </div>
       <div className="calculator-grid-sci">
       <div className="output">
         <div className="previous-operand">
@@ -378,7 +515,22 @@ function App() {
   return (
     <div id="wrapper">
     <div className="history">
-      <button>history</button>
+      <button onClick={handleHistoryClick}>{hist==false?(<>hide-hist</>):(<>show-hist</>)}</button>
+    </div>
+    <div className="historyNavigate">
+      {hist==false?(
+        <>
+      <br></br>
+      <button onClick={()=>handleHistoryScroll("prev")}>prev</button>
+      <br></br>
+      <br></br>
+      <br></br>
+      <button onClick={()=>handleHistoryScroll("next")}>next</button>
+      </>
+      ):(
+        <>
+        </>
+      )}
     </div>
     <div className="calculator-grid">
       <div className="output">

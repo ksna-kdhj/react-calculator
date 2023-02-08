@@ -73,7 +73,7 @@
   }
   .historysci{
     position:absolute;
-    margin-left: 185.95px;
+    margin-left: 167.9px;
   }
   .historysci> button{
     background-color: black;
@@ -81,6 +81,7 @@
     border-top-left-radius:25%;
     border-bottom-left-radius: 25%;
     border-right-color: black;
+    width:72px;
   }
   .historysci >button:hover{
     transform: scale(1.05);
@@ -100,7 +101,7 @@
   }
   .history{
     position:absolute;
-    margin-left: 233.5px;
+    margin-left: 216px;
   }
   .history> button{
     background-color: black;
@@ -108,6 +109,43 @@
     border-top-left-radius:25%;
     border-bottom-left-radius: 25%;
     border-right-color: black;
+    width:72px ;
+  }
+  .historyNavigatesci{
+    position:absolute;
+    margin-left: 719.75px;
+  }
+  .historyNavigatesci> button{
+    background-color: black;
+    color:#e5ede8;
+    border-top-right-radius:25%;
+    border-bottom-right-radius: 25%;
+    border-left-color: black;
+  }
+  .historyNavigatesci >button:hover{
+    transform: scale(1.05);
+    cursor: pointer;
+    color:black;
+    background-color: white;
+    transition: 0.2s;
+  }
+  .historyNavigate{
+    position:absolute;
+    margin-left: 671.75px;
+  }
+  .historyNavigate> button{
+    background-color: black;
+    color:#e5ede8;
+    border-top-right-radius:25%;
+    border-bottom-right-radius: 25%;
+    border-left-color: black;
+  }
+  .historyNavigate >button:hover{
+    transform: scale(1.05);
+    cursor: pointer;
+    color:black;
+    background-color: white;
+    transition: 0.2s;
   }
   #wrapper {
     -webkit-overflow-scrolling: touch;
