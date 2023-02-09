@@ -49,9 +49,9 @@ function reducer(state, { type, payload }) {
     if(histGlobalRef===true){
       histGlobalRef=false
       return{
-      previousOperand:prev_cache,
-      currentOperand:cur_cache,
-      operation:operation_cache,
+        previousOperand:(prev_cache!=""?prev_cache:null),
+        currentOperand:(cur_cache!=""?cur_cache:null),
+       operation:(operation_cache!=""?operation_cache:null),
       overwrite:false
       }
     }
@@ -284,9 +284,9 @@ function reducer(state, { type, payload }) {
       }
     case ACTIONS.TOGGLE_HISTORY_OFF:
       return{
-      previousOperand:prev_cache,
-       currentOperand:cur_cache,
-      operation:operation_cache,
+      previousOperand:(prev_cache!=""?prev_cache:null),
+       currentOperand:(cur_cache!=""?cur_cache:null),
+      operation:(operation_cache!=""?operation_cache:null),
       overwrite:false
       }
     case ACTIONS.SCROLL_HISTORY:
@@ -408,17 +408,21 @@ function App() {
    histGlobalRef=hist
     }
     else{
-      setHist(true)
-      histGlobalRef=true
+    setHist(true)
+    histGlobalRef=true
+    console.log('this is history set true')
     }
     if(hist===true){
+    console.log('im here')
     histScroll=(history.length-1)
     console.log('showing history now')
     dispatch({type: ACTIONS.TOGGLE_HISTORY_ON})
+    // return((<>-hist</>))
     }
     else{
       console.log('not showing history now')
     dispatch({type: ACTIONS.TOGGLE_HISTORY_OFF})
+    // return((<>hide-hist</>))
     }
   }
   // useEffect(()=>{
