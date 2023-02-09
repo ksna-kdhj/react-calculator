@@ -33,7 +33,7 @@ function getConstant(splConst){
       splValue = Math.PI
       break
   }
-  console.log(splValue)
+  // console.log(splValue)
   return splValue.toString()
 }
 const unaryOps=["Sin","Cos","Tan","!","log","sqrt","sqr","±"]
@@ -275,7 +275,7 @@ function reducer(state, { type, payload }) {
         currentOperand: evaluate(state),
       }
     case ACTIONS.TOGGLE_HISTORY_ON:
-      console.log('hi')
+      // console.log('hi')
       return{
         previousOperand:history[histScroll-1],
         currentOperand:history[histScroll],
@@ -410,17 +410,17 @@ function App() {
     else{
     setHist(true)
     histGlobalRef=true
-    console.log('this is history set true')
+    // console.log('this is history set true')
     }
     if(hist===true){
-    console.log('im here')
+    // console.log('im here')
     histScroll=(history.length-1)
-    console.log('showing history now')
+    // console.log('showing history now')
     dispatch({type: ACTIONS.TOGGLE_HISTORY_ON})
     // return((<>-hist</>))
     }
     else{
-      console.log('not showing history now')
+      // console.log('not showing history now')
     dispatch({type: ACTIONS.TOGGLE_HISTORY_OFF})
     // return((<>hide-hist</>))
     }
@@ -453,11 +453,9 @@ function App() {
       {hist==false?(
         <>
       <br></br>
-      <button onClick={()=>handleHistoryScroll("prev")}>prev</button>
+      <button onClick={()=>handleHistoryScroll("prev")}>&#11165;</button>
       <br></br>
-      <br></br>
-      <br></br>
-      <button onClick={()=>handleHistoryScroll("next")}>next</button>
+      <button onClick={()=>handleHistoryScroll("next")}>&#11167;</button>
       </>
       ):(
         <>
@@ -525,11 +523,9 @@ function App() {
       {hist==false?(
         <>
       <br></br>
-      <button onClick={()=>handleHistoryScroll("prev")}>prev</button>
+      <button onClick={()=>handleHistoryScroll("prev")}>&#11165;</button>
       <br></br>
-      <br></br>
-      <br></br>
-      <button onClick={()=>handleHistoryScroll("next")}>next</button>
+      <button onClick={()=>handleHistoryScroll("next")}>&#11167;</button>
       </>
       ):(
         <>

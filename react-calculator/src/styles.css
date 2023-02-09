@@ -51,6 +51,8 @@
   }
   
   .output {
+    border-top-right-radius: 15px;
+    border-top-left-radius: 15px;
     grid-column: 1 / -1;
     background-color: rgba(0, 0, 0, .75);
     display: flex;
@@ -74,12 +76,13 @@
   .historysci{
     position:absolute;
     margin-left: 167.9px;
+    margin-top: 12.5px;
   }
   .historysci> button{
     background-color: black;
     color:#e5ede8;
-    border-top-left-radius:25%;
-    border-bottom-left-radius: 25%;
+    border-top-left-radius:15px;
+    border-bottom-left-radius: 15px;
     border-right-color: black;
     width:72px;
   }
@@ -102,12 +105,13 @@
   .history{
     position:absolute;
     margin-left: 216px;
+    margin-top: 11.75px;
   }
   .history> button{
     background-color: black;
     color:#e5ede8;
-    border-top-left-radius:25%;
-    border-bottom-left-radius: 25%;
+    border-top-left-radius:15px;
+    border-bottom-left-radius: 15px;
     border-right-color: black;
     width:72px ;
   }
@@ -118,8 +122,8 @@
   .historyNavigatesci> button{
     background-color: black;
     color:#e5ede8;
-    border-top-right-radius:25%;
-    border-bottom-right-radius: 25%;
+    border-top-right-radius:15px;
+    border-bottom-right-radius: 15px;
     border-left-color: black;
   }
   .historyNavigatesci >button:hover{
@@ -132,12 +136,15 @@
   .historyNavigate{
     position:absolute;
     margin-left: 671.75px;
+    margin-top: 15px;
   }
   .historyNavigate> button{
     background-color: black;
     color:#e5ede8;
-    border-top-right-radius:25%;
-    border-bottom-right-radius: 25%;
+    border-top-right-radius:15px;
+    border-bottom-right-radius: 15px;
+    border-top-left-radius:15px;
+    border-bottom-left-radius: 15px;
     border-left-color: black;
   }
   .historyNavigate >button:hover{
